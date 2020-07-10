@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">KotlinCourse</string>
+    
+    <string name="forecast_list_format">Forecast : %1$.2f %2$s</string>
 </resources>
