@@ -1,5 +1,6 @@
 package apps.nocturnuslabs.kotlincourse
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -8,6 +9,7 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import apps.nocturnuslabs.kotlincourse.details.ForecastDetailsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,8 +35,10 @@ class MainActivity : AppCompatActivity() {
 
         //Steps for Adapter  - viewholder, adapter and item callback
         val dailyForecastAdapter = DailyForecastAdapter(){
-            val message = getString(R.string.forecast_list_format, it.temp, it.description)
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            val forecastDetailsIntent = Intent(this, ForecastDetailsActivity::class.java)
+            forecastDetailsIntent.putExtra("Temp", it.temp)
+            forecastDetailsIntent.putExtra("Description", it.description)
+            startActivity(forecastDetailsIntent)
         }
         forecastList.adapter = dailyForecastAdapter
 
