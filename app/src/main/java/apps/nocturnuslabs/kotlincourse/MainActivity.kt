@@ -14,10 +14,13 @@ import apps.nocturnuslabs.kotlincourse.details.ForecastDetailsActivity
 class MainActivity : AppCompatActivity() {
 
     private val forecastRepository = ForecastRepo()
+    private lateinit var displaySettingManager: DisplaySettingManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        displaySettingManager = DisplaySettingManager(this)
 
         val zipcodeEditText : EditText = findViewById(R.id.main_editText)
         val enterButton : Button = findViewById(R.id.main_forecast_btn)
@@ -33,8 +36,8 @@ class MainActivity : AppCompatActivity() {
         //we'll need a layout manager to know how the items should be laid out on the screen
         forecastList.layoutManager = LinearLayoutManager(this)
 
-        //Steps for Adapter  - viewholder, adapter and item callback
-        val dailyForecastAdapter = DailyForecastAdapter(){
+        //Steps for Adapter  - view holder, adapter and item callback
+        val dailyForecastAdapter = DailyForecastAdapter(displaySettingManager){
             val forecastDetailsIntent = Intent(this, ForecastDetailsActivity::class.java)
             forecastDetailsIntent.putExtra("Temp", it.temp)
             forecastDetailsIntent.putExtra("Description", it.description)

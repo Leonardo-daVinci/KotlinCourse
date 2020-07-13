@@ -8,19 +8,22 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-class DailyForecastViewHolder(view: View) : RecyclerView.ViewHolder(view){
+class DailyForecastViewHolder(view: View,
+    private val displaySettingManager: DisplaySettingManager
+) : RecyclerView.ViewHolder(view){
 
     private val tempText = view.findViewById<TextView>(R.id.temptext)
     private val descriptionText = view.findViewById<TextView>(R.id.descriptiontext)
 
     fun bind(dailyForecast: DailyForecast) {
-        tempText.text = formatTemperature(dailyForecast.temp)
+        tempText.text = formatTemperature(dailyForecast.temp, displaySettingManager.getDisplaySetting())
         descriptionText.text = dailyForecast.description
     }
 }
 
 class DailyForecastAdapter(
     //this is used to implement clicking on individual list items
+    private val displaySettingManager: DisplaySettingManager,
     private val clickHandler : (DailyForecast)-> Unit
 ) : ListAdapter<DailyForecast, DailyForecastViewHolder>(DIFF_CONFIG) {
 
@@ -51,7 +54,7 @@ class DailyForecastAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DailyForecastViewHolder {
         //this creates a new view holder within which we create a new view which would represent each item in our list
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_daily_forecast, parent, false)
-        return DailyForecastViewHolder(itemView)
+        return DailyForecastViewHolder(itemView, displaySettingManager)
     }
 
     override fun onBindViewHolder(holder: DailyForecastViewHolder, position: Int) {
