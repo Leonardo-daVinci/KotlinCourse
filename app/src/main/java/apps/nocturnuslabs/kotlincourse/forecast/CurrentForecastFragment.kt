@@ -1,5 +1,6 @@
 package apps.nocturnuslabs.kotlincourse.forecast
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,8 +13,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import apps.nocturnuslabs.kotlincourse.*
 import apps.nocturnuslabs.kotlincourse.details.ForecastDetailsActivity
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class CurrentForecastFragment : Fragment() {
+
+    private lateinit var appNavigator: AppNavigator
+
+    //this function is called when fragment lifecycle starts
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        //assign value of context to appNavigator which will then have reference to our MainActivity
+        appNavigator = context as AppNavigator
+    }
 
     private lateinit var displaySettingManager: DisplaySettingManager
     private val forecastRepository = ForecastRepo()
@@ -24,6 +37,8 @@ class CurrentForecastFragment : Fragment() {
     ): View? {
 
         displaySettingManager = DisplaySettingManager(requireContext())
+
+        val zipcode = arguments!!.getString(KEY_ZIPCODE) ?: ""
 
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_current_forecast, container, false)
@@ -45,6 +60,10 @@ class CurrentForecastFragment : Fragment() {
 
         //endregion RecyclerView
 
+        val locationEntryButton : FloatingActionButton = view.findViewById(R.id.locationEntryButton)
+        locationEntryButton.setOnClickListener {
+            appNavigator.navigateToLocationEntry()
+        }
 
         //adding observer for the repository which updates anytime Livedata is updated in the repo
         val weeklyForecastObserver = Observer<List<DailyForecast>>{ forecastItems ->
@@ -55,11 +74,27 @@ class CurrentForecastFragment : Fragment() {
 
         forecastRepository.weeklyForecast.observe(this, weeklyForecastObserver) //observe function requires a lifecycle owner and an observer
 
-
+        forecastRepository.loadForecast(zipcode)
         return view
     }
 
+    //to get Zipcode parameter to our CurrentForecastFragment
     companion object{
+        //this will be used to get the key-value pair for zipcode
+        const val KEY_ZIPCODE = "key_zipcode"
+
+        //newInstance function is used to add new fragments (ITS A CONVENTION)
+        //it acts like a factory method for the fragment and takes parameters that fragment need to operate correctly
+        fun newInstance(zipcode: String) : CurrentForecastFragment{
+            val fragment = CurrentForecastFragment()
+
+            //bundle is a class that is designed to store key-value pairs
+            val args = Bundle()
+            args.putString(KEY_ZIPCODE, zipcode)
+            fragment.arguments = args
+
+            return fragment
+        }
 
     }
 
