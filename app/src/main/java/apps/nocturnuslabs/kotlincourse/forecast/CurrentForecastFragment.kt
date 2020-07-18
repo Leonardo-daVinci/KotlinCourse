@@ -12,8 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import apps.nocturnuslabs.kotlincourse.*
-import apps.nocturnuslabs.kotlincourse.details.ForecastDetailsActivity
-import com.google.android.material.button.MaterialButton
+import apps.nocturnuslabs.kotlincourse.details.ForecastDetailsFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class CurrentForecastFragment : Fragment() {
@@ -38,7 +37,7 @@ class CurrentForecastFragment : Fragment() {
 
         displaySettingManager = DisplaySettingManager(requireContext())
 
-        val zipcode = arguments!!.getString(KEY_ZIPCODE) ?: ""
+        val zipcode = requireArguments().getString(KEY_ZIPCODE) ?: ""
 
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_current_forecast, container, false)
@@ -51,10 +50,7 @@ class CurrentForecastFragment : Fragment() {
 
         //Steps for Adapter  - view holder, adapter and item callback
         val dailyForecastAdapter = DailyForecastAdapter(displaySettingManager){
-            val forecastDetailsIntent = Intent(requireContext(), ForecastDetailsActivity::class.java)
-            forecastDetailsIntent.putExtra("Temp", it.temp)
-            forecastDetailsIntent.putExtra("Description", it.description)
-            startActivity(forecastDetailsIntent)
+            appNavigator.navigateToForecastDetails(it)
         }
         forecastList.adapter = dailyForecastAdapter
 
@@ -72,7 +68,7 @@ class CurrentForecastFragment : Fragment() {
             dailyForecastAdapter.submitList(forecastItems)
         }
 
-        forecastRepository.weeklyForecast.observe(this, weeklyForecastObserver) //observe function requires a lifecycle owner and an observer
+        forecastRepository.weeklyForecast.observe(viewLifecycleOwner, weeklyForecastObserver) //observe function requires a lifecycle owner and an observer
 
         forecastRepository.loadForecast(zipcode)
         return view
