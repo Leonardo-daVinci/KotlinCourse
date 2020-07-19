@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Remember that the id must be the same ast that of the fragment used in Navigation Graph -->
+    <item
+        android:id="@+id/currentForecastFragment"
+        android:icon="@drawable/ic__edit_location"
+        android:title="@string/bottom_nav_label_today"/>
+
+    <item
+        android:id="@+id/weeklyForecastFragment"
+        android:icon="@drawable/ic_cloud"
+        android:title="@string/bottom_nav_label_weekly"/>
+
+
+</menu>

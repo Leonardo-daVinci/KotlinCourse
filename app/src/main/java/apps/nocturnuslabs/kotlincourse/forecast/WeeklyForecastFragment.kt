@@ -16,7 +16,7 @@ import apps.nocturnuslabs.kotlincourse.*
 import apps.nocturnuslabs.kotlincourse.details.ForecastDetailsFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class CurrentForecastFragment : Fragment() {
+class WeeklyForecastFragment : Fragment() {
 
     private lateinit var displaySettingManager: DisplaySettingManager
     private val forecastRepository = ForecastRepo()
@@ -31,7 +31,7 @@ class CurrentForecastFragment : Fragment() {
         val zipcode =  ""
 
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_current_forecast, container, false)
+        val view = inflater.inflate(R.layout.fragment_weekly_forecast, container, false)
 
         // region RecyclerView Implementation
         val forecastList : RecyclerView = view.findViewById(R.id.main_forecast_list)
@@ -41,7 +41,7 @@ class CurrentForecastFragment : Fragment() {
 
         //Steps for Adapter  - view holder, adapter and item callback
         val dailyForecastAdapter = DailyForecastAdapter(displaySettingManager){
-            val action = CurrentForecastFragmentDirections.actionCurrentForecastFragmentToForecastDetailsFragment(it.temp, it.description)
+            val action = WeeklyForecastFragmentDirections.actionWeeklyForecastFragmentToForecastDetailsFragment(it.temp, it.description)
             findNavController().navigate(action)
         }
         forecastList.adapter = dailyForecastAdapter
@@ -67,7 +67,7 @@ class CurrentForecastFragment : Fragment() {
     }
 
     private fun showLocationEntry(){
-        val action = CurrentForecastFragmentDirections.actionCurrentForecastFragmentToLocationEntryFragment()
+        val action = WeeklyForecastFragmentDirections.actionWeeklyForecastFragmentToLocationEntryFragment()
         findNavController().navigate(action)
     }
 
@@ -78,8 +78,8 @@ class CurrentForecastFragment : Fragment() {
 
         //newInstance function is used to add new fragments (ITS A CONVENTION)
         //it acts like a factory method for the fragment and takes parameters that fragment need to operate correctly
-        fun newInstance(zipcode: String) : CurrentForecastFragment{
-            val fragment = CurrentForecastFragment()
+        fun newInstance(zipcode: String) : WeeklyForecastFragment{
+            val fragment = WeeklyForecastFragment()
 
             //bundle is a class that is designed to store key-value pairs
             val args = Bundle()

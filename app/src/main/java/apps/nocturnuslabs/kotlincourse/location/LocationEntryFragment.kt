@@ -8,20 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import apps.nocturnuslabs.kotlincourse.AppNavigator
+import androidx.navigation.fragment.findNavController
 import apps.nocturnuslabs.kotlincourse.R
 
 class LocationEntryFragment : Fragment() {
-
-    private lateinit var appNavigator: AppNavigator
-
-    //this function is called when fragment lifecycle starts
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        //assign value of context to appNavigator which will then have reference to our MainActivity
-        appNavigator = context as AppNavigator
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +26,7 @@ class LocationEntryFragment : Fragment() {
         enterButton.setOnClickListener {
             val zipcode : String = zipcodeEditText.text.toString()
 
-            appNavigator.navigateToCurrentForecast(zipcode)
+            findNavController().navigateUp()
         }
 
         return view
