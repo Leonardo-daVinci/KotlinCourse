@@ -20,6 +20,7 @@ class WeeklyForecastFragment : Fragment() {
 
     private lateinit var displaySettingManager: DisplaySettingManager
     private val forecastRepository = ForecastRepo()
+    private lateinit var locationRepository: LocationRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,7 +63,14 @@ class WeeklyForecastFragment : Fragment() {
 
         forecastRepository.weeklyForecast.observe(viewLifecycleOwner, weeklyForecastObserver) //observe function requires a lifecycle owner and an observer
 
-        forecastRepository.loadForecast(zipcode)
+        locationRepository = LocationRepository(requireContext())
+        val savedLocationObserver = Observer<Location>{
+            when(it){
+                is Location.Zipcode -> forecastRepository.loadWeeklyForecast(it.zipcode)
+            }
+        }
+        locationRepository.savedLocation.observe(viewLifecycleOwner, savedLocationObserver)
+
         return view
     }
 

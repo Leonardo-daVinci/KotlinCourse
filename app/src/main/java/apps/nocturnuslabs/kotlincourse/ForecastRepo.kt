@@ -2,28 +2,41 @@ package apps.nocturnuslabs.kotlincourse
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import java.util.*
 import kotlin.random.Random
 
 class ForecastRepo {
 
+    //region Current Forecast
+    private val _currentForecast = MutableLiveData<DailyForecast>()
+    val currentForecast : LiveData<DailyForecast> = _currentForecast
 
+    fun loadCurrentForecast(zipcode: String){
+        val randomTemp = Random.nextFloat().rem(100)*100
+        val forecast = DailyForecast(Date(), randomTemp, getTempDescription(randomTemp))
+        _currentForecast.value = forecast
+    }
+    //endregion
+
+    //region Weekly Forecast
     //internal to our forecast used to update data
     private val _weeklyForecast = MutableLiveData<List<DailyForecast>>()
 
     //data that the ui would listen to for the changes
     val weeklyForecast : LiveData<List<DailyForecast>> = _weeklyForecast
 
-    //load the data into weeklyforecast
-    fun loadForecast(zipcode: String){
+    //load the data into weekly forecast
+    fun loadWeeklyForecast(zipcode: String){
 
         //generates List of Size seven and then initializes it using random function
         //rem works like Modulus Function
         val randomValues = List(8){ Random.nextFloat().rem(100) * 100 }
         val forecastItems = randomValues.map{
-            DailyForecast(it, getTempDescription(it))
+            DailyForecast(Date(), it, getTempDescription(it))
         }
         _weeklyForecast.value = forecastItems
     }
+    //endregion
 
     private fun getTempDescription(temp: Float ): String = when(temp){
         in Float.MIN_VALUE.rangeTo(0f) -> "Anything below 0 doesn't make sense"

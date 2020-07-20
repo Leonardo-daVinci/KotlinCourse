@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,7 @@ class CurrentForecastFragment : Fragment() {
 
     private lateinit var displaySettingManager: DisplaySettingManager
     private val forecastRepository = ForecastRepo()
+    private lateinit var locationRepository: LocationRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,15 +56,22 @@ class CurrentForecastFragment : Fragment() {
         }
 
         //adding observer for the repository which updates anytime Livedata is updated in the repo
-        val weeklyForecastObserver = Observer<List<DailyForecast>>{ forecastItems ->
-            //update our list adapter
-            Toast.makeText(requireContext(), "Loaded Items", Toast.LENGTH_SHORT).show()
-            dailyForecastAdapter.submitList(forecastItems)
+        val currentForecastObserver = Observer<DailyForecast> {
+            dailyForecastAdapter.submitList(listOf(it))
         }
 
-        forecastRepository.weeklyForecast.observe(viewLifecycleOwner, weeklyForecastObserver) //observe function requires a lifecycle owner and an observer
+        forecastRepository.currentForecast.observe(viewLifecycleOwner, currentForecastObserver) //observe function requires a lifecycle owner and an observer
 
-        forecastRepository.loadForecast(zipcode)
+        locationRepository = LocationRepository(requireContext())
+
+        //observe changes to location
+        val savedLocationObserver = Observer<Location>{
+            when(it){
+                is Location.Zipcode -> forecastRepository.loadCurrentForecast(it.zipcode)
+            }
+        }
+        locationRepository.savedLocation.observe(viewLifecycleOwner, savedLocationObserver)
+
         return view
     }
 
