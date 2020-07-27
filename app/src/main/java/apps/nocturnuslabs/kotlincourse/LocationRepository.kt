@@ -46,7 +46,7 @@ class LocationRepository(context: Context) {
 
     private fun broadcastSavedZipcode(){
         val zipcode = preferences.getString(KEY_ZIPCODE, "")
-        if(zipcode!=null && zipcode.isNullOrBlank()){
+        if (zipcode != null && zipcode.isNotBlank()) {
             _savedLocation.value = Location.Zipcode(zipcode)
         }
     }

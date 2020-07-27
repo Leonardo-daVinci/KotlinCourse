@@ -14,8 +14,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import apps.nocturnuslabs.kotlincourse.*
+import apps.nocturnuslabs.kotlincourse.api.CurrentWeather
 import apps.nocturnuslabs.kotlincourse.details.ForecastDetailsFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.fragment_current_forecast.*
 
 class CurrentForecastFragment : Fragment() {
 
@@ -35,6 +37,7 @@ class CurrentForecastFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_current_forecast, container, false)
 
+        /**
         // region RecyclerView Implementation
         val forecastList : RecyclerView = view.findViewById(R.id.main_forecast_list)
 
@@ -43,30 +46,36 @@ class CurrentForecastFragment : Fragment() {
 
         //Steps for Adapter  - view holder, adapter and item callback
         val dailyForecastAdapter = DailyForecastAdapter(displaySettingManager){
-            val action = CurrentForecastFragmentDirections.actionCurrentForecastFragmentToForecastDetailsFragment(it.temp, it.description)
-            findNavController().navigate(action)
+        val action = CurrentForecastFragmentDirections.actionCurrentForecastFragmentToForecastDetailsFragment(it.temp, it.description)
+        findNavController().navigate(action)
         }
         forecastList.adapter = dailyForecastAdapter
 
         //endregion RecyclerView
+         **/
 
-        val locationEntryButton : FloatingActionButton = view.findViewById(R.id.locationEntryButton)
+        val locationEntryButton: FloatingActionButton = view.findViewById(R.id.locationEntryButton)
         locationEntryButton.setOnClickListener {
             showLocationEntry()
         }
 
         //adding observer for the repository which updates anytime Livedata is updated in the repo
-        val currentForecastObserver = Observer<DailyForecast> {
-            dailyForecastAdapter.submitList(listOf(it))
+        val currentWeatherObserver = Observer<CurrentWeather> {
+            location_name.text = it.name
+            temp_text.text =
+                formatTemperature(it.forecast.temp, displaySettingManager.getDisplaySetting())
         }
 
-        forecastRepository.currentForecast.observe(viewLifecycleOwner, currentForecastObserver) //observe function requires a lifecycle owner and an observer
+        forecastRepository.currentWeather.observe(
+            viewLifecycleOwner,
+            currentWeatherObserver
+        ) //observe function requires a lifecycle owner and an observer
 
         locationRepository = LocationRepository(requireContext())
 
         //observe changes to location
-        val savedLocationObserver = Observer<Location>{
-            when(it){
+        val savedLocationObserver = Observer<Location> {
+            when (it) {
                 is Location.Zipcode -> forecastRepository.loadCurrentForecast(it.zipcode)
             }
         }

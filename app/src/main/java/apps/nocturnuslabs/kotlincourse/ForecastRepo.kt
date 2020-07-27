@@ -1,20 +1,44 @@
 package apps.nocturnuslabs.kotlincourse
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import apps.nocturnuslabs.kotlincourse.api.CurrentWeather
+import apps.nocturnuslabs.kotlincourse.api.createOpenWeatherMapService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 import kotlin.random.Random
 
 class ForecastRepo {
 
     //region Current Forecast
-    private val _currentForecast = MutableLiveData<DailyForecast>()
-    val currentForecast : LiveData<DailyForecast> = _currentForecast
+    private val _currentWeather = MutableLiveData<CurrentWeather>()
+    val currentWeather: LiveData<CurrentWeather> = _currentWeather
 
-    fun loadCurrentForecast(zipcode: String){
-        val randomTemp = Random.nextFloat().rem(100)*100
-        val forecast = DailyForecast(Date(), randomTemp, getTempDescription(randomTemp))
-        _currentForecast.value = forecast
+    fun loadCurrentForecast(zipcode: String) {
+        val call = createOpenWeatherMapService().currentWeather(
+            zipcode,
+            "imperial",
+            BuildConfig.OPEN_WEATHER_MAP_API_KEY
+        )
+        call.enqueue(object : Callback<CurrentWeather> {
+            override fun onFailure(call: Call<CurrentWeather>, t: Throwable) {
+                Log.e(ForecastRepo::class.java.simpleName, "Error loading weather", t)
+            }
+
+            override fun onResponse(
+                call: Call<CurrentWeather>,
+                response: Response<CurrentWeather>
+            ) {
+                val weatherResponse = response.body()
+                if (weatherResponse != null) {
+                    _currentWeather.value = weatherResponse
+                }
+            }
+
+        })
     }
     //endregion
 
@@ -23,7 +47,7 @@ class ForecastRepo {
     private val _weeklyForecast = MutableLiveData<List<DailyForecast>>()
 
     //data that the ui would listen to for the changes
-    val weeklyForecast : LiveData<List<DailyForecast>> = _weeklyForecast
+    val weeklyForecast: LiveData<List<DailyForecast>> = _weeklyForecast
 
     //load the data into weekly forecast
     fun loadWeeklyForecast(zipcode: String){
