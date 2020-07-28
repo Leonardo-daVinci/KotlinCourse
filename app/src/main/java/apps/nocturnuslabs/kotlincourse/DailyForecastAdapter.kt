@@ -7,17 +7,28 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import apps.nocturnuslabs.kotlincourse.api.DailyForecast
+import java.text.SimpleDateFormat
+import java.util.*
 
-class DailyForecastViewHolder(view: View,
+private val DATE_FORMAT = SimpleDateFormat("MM-dd-yyyy")
+
+class DailyForecastViewHolder(
+    view: View,
     private val displaySettingManager: DisplaySettingManager
-) : RecyclerView.ViewHolder(view){
+) : RecyclerView.ViewHolder(view) {
 
     private val tempText = view.findViewById<TextView>(R.id.temptext)
     private val descriptionText = view.findViewById<TextView>(R.id.descriptiontext)
+    private val dateText = view.findViewById<TextView>(R.id.datetext)
 
     fun bind(dailyForecast: DailyForecast) {
-        tempText.text = formatTemperature(dailyForecast.temp, displaySettingManager.getDisplaySetting())
-        descriptionText.text = dailyForecast.description
+        tempText.text =
+            formatTemperature(dailyForecast.temp.max, displaySettingManager.getDisplaySetting())
+        descriptionText.text = dailyForecast.weather[0].description
+
+        //date from api is in seconds while our Date class expects milliseconds, so we multiply by thousand
+        dateText.text = DATE_FORMAT.format(Date(dailyForecast.date * 1000))
     }
 }
 

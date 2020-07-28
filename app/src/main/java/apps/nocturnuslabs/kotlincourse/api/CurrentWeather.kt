@@ -9,7 +9,7 @@ data class Coordinates(val lat: Float, val lon: Float)
 
 data class CurrentWeather(
     val name: String, //saves location that was passed
-    val coordinates: Coordinates,
+    val coord: Coordinates,
 
     //to have the variables names more semantically correct, we can use the following annotation
     //this tells retrofit how to parse the result meanwhile we can call it whatever we want
